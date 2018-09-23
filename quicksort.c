@@ -12,7 +12,33 @@
 #include "util.h"
 
 // TODO: implement
-int quicksort(UINT* A, int lo, int hi) {
+int quicksort(UINT* number, int first, int last) {
+		int i,j,pivot,temp;
+		if(first<last){
+			pivot=first;
+			i=first;
+			j=last;
+			
+			while(i<j){
+				while(number[i]<=number[pivot]&&i<last)
+					i++;
+				while(number[i]>number[pivot])
+					j--;
+				if(i<j){
+					temp=number[i];
+					number = number[j];
+					number[j]=temp;
+				}
+			}
+			
+			temp=number[pivot];
+			number[pivot]=number[j];
+			number[j]=temp;
+			quicksort(number,first,j-1);
+			quicksort(number,j+1,last);
+			
+		}
+		
     return 0;
 }
 
@@ -28,10 +54,47 @@ int main(int argc, char** argv) {
     printf("[quicksort] Number of cores available: '%ld'\n",
            sysconf(_SC_NPROCESSORS_ONLN));
 
-    /* TODO: parse arguments with getopt */
+    /* parse arguments with getopt */
+    int E = 0;
+    int T = 0;
+    
+    while((c = getopt (argc, argv, "E:T:")) != -1){
+    	switch(c)
+    	{
+    		case 'E':
+    			E = atoi(optarg);
+    		case 'T':
+    			T = atoi(optarg);
+    	}
+    }
+    
+    if (E<0 || T<3 || 9<T){
+    	printf("Program terminated, value(s) out of range");
+    	exit(0);
+    }
+    
+    size = 10;
+    
+   for(int i=1;i<=T;i++){
+    	size = size*10;
+    }
 
-    /* TODO: start datagen here as a child process. */
+    /* start datagen here as a child process. */
+		pid_t datagen_id = fork();
+    char *datagen_file[]={"./datagen",NULL};
 
+
+    if(datagen_id == 0)
+    {
+    	printf("%s%d\n","PID Fork Datagen : ", getpid());
+    	execvp(datagen_file[0],datagen_file);
+
+    }
+    else if(datagen_id == -1)
+    {
+      printf("error al crear fork \n");
+    }
+    
     /* Create the domain socket to talk to datagen. */
     struct sockaddr_un addr;
     int fd;
