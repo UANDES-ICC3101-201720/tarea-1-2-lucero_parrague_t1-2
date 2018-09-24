@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#include <pthread.h>
 #include "types.h"
 #include "const.h"
 #include "util.h"
@@ -26,7 +27,7 @@ int quicksort(UINT* number, int first, int last) {
 					j--;
 				if(i<j){
 					temp=number[i];
-					number = number[j];
+					number[i] = number[j];
 					number[j]=temp;
 				}
 			}
@@ -57,6 +58,7 @@ int main(int argc, char** argv) {
     /* parse arguments with getopt */
     int E = 0;
     int T = 0;
+    int c;
     
     while((c = getopt (argc, argv, "E:T:")) != -1){
     	switch(c)
@@ -68,12 +70,12 @@ int main(int argc, char** argv) {
     	}
     }
     
-    if (E<0 || T<3 || 9<T){
+    if (E<0 && (T<3 || 9<T)){
     	printf("Program terminated, value(s) out of range");
     	exit(0);
     }
     
-    size = 10;
+    int size = 10;
     
    for(int i=1;i<=T;i++){
     	size = size*10;
@@ -115,11 +117,11 @@ int main(int argc, char** argv) {
     }
 
     /* DEMO: request two sets of unsorted random numbers to datagen */
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; i++){
         /* T value 3 hardcoded just for testing. */
         char *begin = "BEGIN U 3";
         int rc = strlen(begin);
-
+				
         /* Request the random number stream to datagen */
         if (write(fd, begin, strlen(begin)) != rc) {
             if (rc > 0) fprintf(stderr, "[quicksort] partial write.\n");
@@ -127,6 +129,7 @@ int main(int argc, char** argv) {
                 perror("[quicksort] write error.\n");
                 exit(-1);
             }
+        }
         }
 
         /* validate the response */
@@ -158,7 +161,7 @@ int main(int argc, char** argv) {
         }
 
         free(readbuf);
-    }
+    
 
     /* Issue the END command to datagen */
     int rc = strlen(DATAGEN_END_CMD);
