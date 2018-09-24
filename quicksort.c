@@ -1,12 +1,15 @@
 #include <stdio.h>
+#include <time.h>
 #include <stdlib.h>
-#include <math.h>
 #include <unistd.h>
+#include <limits.h>
+#include <math.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <sys/un.h>
 #include <stdbool.h>
 #include <string.h>
-#include <time.h>
+#include <getopt.h>
 #include <pthread.h>
 #include "types.h"
 #include "const.h"
@@ -57,27 +60,35 @@ int main(int argc, char** argv) {
 
     /* parse arguments with getopt */
     int E = 0;
-    int T = 0;
+    char* T;
+    int t_num = 0;
     int c;
     
     while((c = getopt (argc, argv, "E:T:")) != -1){
-    	switch(c)
+    	switch (c)
     	{
     		case 'E':
-    			E = atoi(optarg);
-    		case 'T':
-    			T = atoi(optarg);
+						E = atoi(optarg);
+						break;
+				case 'T':
+						T = optarg;
+						printf("T: %s\n",T);
+						break;
     	}
+
     }
     
-    if (E<0 && (T<3 || 9<T)){
+    t_num = atoi(T);
+
+    
+    if (E<0 || (t_num<3 || 9<t_num)){
     	printf("Program terminated, value(s) out of range");
     	exit(0);
     }
     
     int size = 10;
     
-   for(int i=1;i<=T;i++){
+    for(int i=1;i<=t_num;i++){
     	size = size*10;
     }
 
@@ -119,9 +130,10 @@ int main(int argc, char** argv) {
     /* DEMO: request two sets of unsorted random numbers to datagen */
     for (int i = 0; i < 2; i++){
         /* T value 3 hardcoded just for testing. */
-        char *begin = "BEGIN U 3";
+        char begin[10] = "BEGIN U ";
+        strcat(begin,T);
+        printf("begin: %s\n",begin);
         int rc = strlen(begin);
-				
         /* Request the random number stream to datagen */
         if (write(fd, begin, strlen(begin)) != rc) {
             if (rc > 0) fprintf(stderr, "[quicksort] partial write.\n");
@@ -144,7 +156,7 @@ int main(int argc, char** argv) {
         }
 
         UINT readvalues = 0;
-        size_t numvalues = pow(10, 3);
+        size_t numvalues = pow(10, t_num);
         size_t readbytes = 0;
 
         UINT *readbuf = malloc(sizeof(UINT) * numvalues);
