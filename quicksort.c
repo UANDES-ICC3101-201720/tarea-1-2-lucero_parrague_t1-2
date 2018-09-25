@@ -11,6 +11,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <pthread.h>
+#include <assert.h>
 #include "types.h"
 #include "const.h"
 #include "util.h"
@@ -26,7 +27,6 @@
 int partition(UINT *array, int lo, int hi)
 {
     int pivotValue = array[hi];
-    //SWAP(array[pivot], array[hi]);
     int storeIndex = lo;
     for (int i=lo ; i<hi ; i++)
     {
@@ -39,9 +39,7 @@ int partition(UINT *array, int lo, int hi)
     SWAP(array[storeIndex], array[hi]);
     return storeIndex;
 }
-/**
- * Serial Quicksort implementation.
- */
+
  void quicksort(UINT *array, int lo, int hi)
  {
       if (hi > lo)
@@ -53,11 +51,52 @@ int partition(UINT *array, int lo, int hi)
       }
  }
 
+//----------------------------------------------------------
 
-// TODO: implement
-int parallel_quicksort(UINT* A, int lo, int hi) {
-    return 0;
+// TODO: implement quicksort parallel
+
+struct quicksort_variables
+{
+    UINT *array;
+    int lo;
+    int hi;
+};
+
+void parallel_quicksort(UINT *array, int lo, int hi);
+
+void* quicksort_thread(void *init)
+{
+    struct quicksort_variables *start = init;
+    parallel_quicksort(start->array, start->lo, start->hi);
+    return NULL;
 }
+
+void parallel_quicksort(UINT *array, int lo, int hi)
+{
+    if (hi > lo)
+    {
+        int pivotIndex = lo + (hi - lo)/2;
+        pivotIndex = partition(array, lo, hi);
+        int sub_process = 2; //cantidad arbitraria p de threads, 2 para la maquina virtual default
+        if (sub_process-- > 0)
+        {
+            struct quicksort_variables vars = {array, lo, pivotIndex-1};
+            pthread_t new_thread;
+            int ret = pthread_create(&new_thread, NULL, quicksort_thread, &vars);
+            assert((ret == 0) && "Thread creation failed");
+
+            parallel_quicksort(array, pivotIndex+1, hi);
+
+            pthread_join(new_thread, NULL);
+        }
+        else
+        {
+            quicksort(array, lo, pivotIndex-1);
+            quicksort(array, pivotIndex+1, hi);
+        }
+    }
+}
+//-------------------------------------------------------
 
 int main(int argc, char** argv) {
     printf("[quicksort] Starting up...\n");
@@ -186,6 +225,7 @@ int main(int argc, char** argv) {
         printf("\n \n");
 
         quicksort(readbuf,0,numvalues);
+        //parallel_quicksort(readbuf,0,numvalues);
 
         for (UINT *pv = readbuf; pv < readbuf + numvalues; pv++) {
             printf("%u,", *pv);
