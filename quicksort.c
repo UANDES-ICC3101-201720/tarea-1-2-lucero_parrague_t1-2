@@ -16,36 +16,42 @@
 #include "util.h"
 
 // TODO: implement
-void quicksort(UINT* number,int first,int last){
-   int i, j, pivot, temp;
+// Macro para swap.
+#define SWAP(x,y) do {\
+    __typeof__(x) tmp = x;\
+    x = y;\
+    y = tmp;\
+} while(0)
 
-   if(first<last){
-      pivot=first;
-      i=first;
-      j=last;
-
-      while(i<j){
-         while(number[i]<=number[pivot]&&i<last)
-            i++;
-         while(number[j]>number[pivot])
-            j--;
-         if(i<j){
-            temp=number[i];
-            number[i]=number[j];
-            number[j]=temp;
-         }
-      }
-
-      temp=number[pivot];
-      number[pivot]=number[j];
-      number[j]=temp;
-      quicksort(number,first,j-1);
-      quicksort(number,j+1,last);
-
-   }
+int partition(UINT *array, int lo, int hi)
+{
+    int pivotValue = array[hi];
+    //SWAP(array[pivot], array[hi]);
+    int storeIndex = lo;
+    for (int i=lo ; i<hi ; i++)
+    {
+        if (array[i] <= pivotValue)
+        {
+            SWAP(array[i], array[storeIndex]);
+            storeIndex++;
+        }
+    }
+    SWAP(array[storeIndex], array[hi]);
+    return storeIndex;
 }
-
-
+/**
+ * Serial Quicksort implementation.
+ */
+ void quicksort(UINT *array, int lo, int hi)
+ {
+      if (hi > lo)
+      {
+         int pivotIndex = lo + (hi - lo)/2;
+         pivotIndex = partition(array, lo, hi);
+         quicksort(array, lo, pivotIndex-1);
+         quicksort(array, pivotIndex+1, hi);
+      }
+ }
 
 
 // TODO: implement
@@ -176,7 +182,8 @@ int main(int argc, char** argv) {
             printf("%u,", *pv);
         }
 
-				printf("Hasta aqui funciona\n");
+			//	printf("Hasta aqui funciona\n");
+        printf("\n \n");
 
         quicksort(readbuf,0,numvalues);
 
