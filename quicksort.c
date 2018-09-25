@@ -16,35 +16,37 @@
 #include "util.h"
 
 // TODO: implement
-int quicksort(UINT* number, int first, int last) {
-		int i,j,pivot,temp;
-		if(first<last){
-			pivot=first;
-			i=first;
-			j=last;
-			
-			while(i<j){
-				while(number[i]<=number[pivot]&&i<last)
-					i++;
-				while(number[i]>number[pivot])
-					j--;
-				if(i<j){
-					temp=number[i];
-					number[i] = number[j];
-					number[j]=temp;
-				}
-			}
-			
-			temp=number[pivot];
-			number[pivot]=number[j];
-			number[j]=temp;
-			quicksort(number,first,j-1);
-			quicksort(number,j+1,last);
-			
-		}
-		
-    return 0;
+void quicksort(UINT* number,int first,int last){
+   int i, j, pivot, temp;
+
+   if(first<last){
+      pivot=first;
+      i=first;
+      j=last;
+
+      while(i<j){
+         while(number[i]<=number[pivot]&&i<last)
+            i++;
+         while(number[j]>number[pivot])
+            j--;
+         if(i<j){
+            temp=number[i];
+            number[i]=number[j];
+            number[j]=temp;
+         }
+      }
+
+      temp=number[pivot];
+      number[pivot]=number[j];
+      number[j]=temp;
+      quicksort(number,first,j-1);
+      quicksort(number,j+1,last);
+
+   }
 }
+
+
+
 
 // TODO: implement
 int parallel_quicksort(UINT* A, int lo, int hi) {
@@ -63,7 +65,7 @@ int main(int argc, char** argv) {
     char* T;
     int t_num = 0;
     int c;
-    
+
     while((c = getopt (argc, argv, "E:T:")) != -1){
     	switch (c)
     	{
@@ -77,17 +79,17 @@ int main(int argc, char** argv) {
     	}
 
     }
-    
+
     t_num = atoi(T);
 
-    
+
     if (E<0 || (t_num<3 || 9<t_num)){
     	printf("Program terminated, value(s) out of range");
     	exit(0);
     }
-    
+
     int size = 10;
-    
+
     for(int i=1;i<=t_num;i++){
     	size = size*10;
     }
@@ -107,7 +109,7 @@ int main(int argc, char** argv) {
     {
       printf("error al crear fork \n");
     }
-    
+
     /* Create the domain socket to talk to datagen. */
     struct sockaddr_un addr;
     int fd;
@@ -168,12 +170,24 @@ int main(int argc, char** argv) {
         }
 
         /* Print out the values obtained from datagen */
+				/* Print out the values obtained from datagen */
+
         for (UINT *pv = readbuf; pv < readbuf + numvalues; pv++) {
-            printf("%u\n", *pv);
+            printf("%u,", *pv);
         }
 
+				printf("Hasta aqui funciona\n");
+
+        quicksort(readbuf,0,numvalues);
+
+        for (UINT *pv = readbuf; pv < readbuf + numvalues; pv++) {
+            printf("%u,", *pv);
+        }
+        printf("\n");
+
+
         free(readbuf);
-    
+
 
     /* Issue the END command to datagen */
     int rc = strlen(DATAGEN_END_CMD);
