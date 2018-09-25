@@ -175,11 +175,10 @@ int main(int argc, char** argv) {
     }
 
     /* DEMO: request two sets of unsorted random numbers to datagen */
-    for (int i = 0; i < 2; i++){
+    for (int i = 0; i < E; i++){
         /* T value 3 hardcoded just for testing. */
         char begin[10] = "BEGIN U ";
         strcat(begin,T);
-        printf("begin: %s\n",begin);
         int rc = strlen(begin);
         /* Request the random number stream to datagen */
         if (write(fd, begin, strlen(begin)) != rc) {
@@ -189,7 +188,7 @@ int main(int argc, char** argv) {
                 exit(-1);
             }
         }
-        }
+        
 
         /* validate the response */
         char respbuf[10];
@@ -213,10 +212,12 @@ int main(int argc, char** argv) {
             readbytes = read(fd, readbuf + readvalues, sizeof(UINT) * 1000);
             readvalues += readbytes / 4;
         }
+        printf("\n Experimento numero %d \n", i+1);
 
         /* Print out the values obtained from datagen */
 				/* Print out the values obtained from datagen */
-
+				printf("Entrada al QuickSort: \n");
+				printf("\n");
         for (UINT *pv = readbuf; pv < readbuf + numvalues; pv++) {
             printf("%u,", *pv);
         }
@@ -224,8 +225,9 @@ int main(int argc, char** argv) {
 			//	printf("Hasta aqui funciona\n");
         printf("\n \n");
 
-        quicksort(readbuf,0,numvalues);
-        //parallel_quicksort(readbuf,0,numvalues);
+        printf("Salida quicksort: \n");
+				printf("\n");
+        parallel_quicksort(readbuf,0,numvalues);
 
         for (UINT *pv = readbuf; pv < readbuf + numvalues; pv++) {
             printf("%u,", *pv);
@@ -235,7 +237,7 @@ int main(int argc, char** argv) {
 
         free(readbuf);
 
-
+		}
     /* Issue the END command to datagen */
     int rc = strlen(DATAGEN_END_CMD);
     if (write(fd, DATAGEN_END_CMD, strlen(DATAGEN_END_CMD)) != rc) {
@@ -246,6 +248,7 @@ int main(int argc, char** argv) {
             exit(-1);
         }
     }
+    
 
     close(fd);
     exit(0);
