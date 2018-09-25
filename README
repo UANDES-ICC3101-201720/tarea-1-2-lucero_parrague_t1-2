@@ -1,0 +1,15 @@
+Tarea 1.2 de Sistema Operativo
+
+Miembros:
+	-Vicente Lucero
+	-Ignacio Parrague
+	
+INFORME: 
+	Para esta segunda parte de la tarea, se nos pidio implementar un programa de quicksort con el fin de profundizar y aprender a traves de la practica a utlizar threads para simplificar procesos y administrar la memoria requerida.
+	
+	Para realizar lo dicho anteriormente, la programacion del quicksort consistio en crear dos funciones de sort, un quicksort serial y otro paralelo (dividir y conquistrar), en donde la creacion del quicksort serial es requerida para utlizarce como un "thread" en sort paralelo.
+	
+	Cabe rescatar que el proceso y su consumo de memoria puede variar dependiendo de la cantidad de nucleos o procesadores disponibles en el computador o consola virtual (para quienes debieron utilizarla) pero de igual manera la division del proceso agiliza la realizacion del mismo.
+	
+	La dificultad para implementar el Quicksort cabe en la corroboracion del orden de los datos, pues usualmente el datagen genera numeros de gran tamaño, ademas de que almenos tendremos un minimo de mil elementos para los experimentos.
+	
